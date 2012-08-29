@@ -1,0 +1,5 @@
+00:46:12.955532 == Info: About to connect() to proxy ::1 port 8994 (#0)
+00:46:12.955766 == Info:   Trying ::1...
+00:46:12.956878 == Info: Connection refused
+00:46:12.956957 == Info: couldn't connect to host
+00:46:12.956975 == Info: Closing connection #0

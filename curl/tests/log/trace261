@@ -1,0 +1,5 @@
+00:46:12.893176 == Info: About to connect() to 127.0.0.1 port 8992 (#0)
+00:46:12.893390 == Info:   Trying 127.0.0.1...
+00:46:12.894403 == Info: Connection refused
+00:46:12.894477 == Info: couldn't connect to host
+00:46:12.894501 == Info: Closing connection #0

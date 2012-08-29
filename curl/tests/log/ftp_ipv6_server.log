@@ -1,0 +1,28 @@
+00:46:12.366603 ====> Client connect
+00:46:12.366865 > "220-        _   _ ____  _     [CR][LF]"
+00:46:12.366934 > "220-    ___| | | |  _ \| |    [CR][LF]"
+00:46:12.366995 > "220-   / __| | | | |_) | |    [CR][LF]"
+00:46:12.367057 > "220-  | (__| |_| |  _ <| |___ [CR][LF]"
+00:46:12.367116 > "220    \___|\___/|_| \_\_____|[CR][LF]"
+00:46:12.369955 < "USER anonymous"
+00:46:12.370034 > "331 We are happy you popped in![CR][LF]"
+00:46:12.370565 < "PASS ftp@example.com"
+00:46:12.370630 > "230 Welcome you silly person[CR][LF]"
+00:46:12.371074 < "PWD"
+00:46:12.371140 > "257 "/" is current directory[CR][LF]"
+00:46:12.371663 < "EPRT |2|::1|42111|"
+00:46:12.371717 ====> Active DATA channel requested by client
+00:46:12.371781 > "200 Thanks for dropping by. We contact you later[CR][LF]"
+00:46:12.371823 DATA sockfilt for active data channel starting...
+00:46:12.375447 DATA sockfilt for active data channel started (pid 25065)
+00:46:12.375523 ====> Active DATA channel connected to client port 42111
+00:46:12.375696 < "TYPE A"
+00:46:12.375779 > "200 I modify TYPE as you wanted[CR][LF]"
+00:46:12.376292 < "LIST"
+00:46:12.376359 > "150 here comes a directory[CR][LF]"
+00:46:12.376410 pass LIST data on data connection
+00:46:12.376575 =====> Closing active DATA connection...
+00:46:12.376611 Server disconnects active DATA connection
+00:46:12.378774 DATA sockfilt for active data channel quits (pid 25066)
+00:46:12.378847 =====> Closed active DATA connection
+00:46:12.378921 > "226 ASCII transfer complete[CR][LF]"

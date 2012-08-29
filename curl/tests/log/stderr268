@@ -1,0 +1,5 @@
+Warning: Couldn't read data from file "nonesuchfile", this makes an empty 
+Warning: POST.
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0curl: (7) couldn't connect to host

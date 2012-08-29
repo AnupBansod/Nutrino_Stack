@@ -1,0 +1,65 @@
+00:46:12.568572 == Info: About to connect() to ::1 port 8996 (#0)
+00:46:12.568786 == Info:   Trying ::1...
+00:46:12.571801 == Info: connected
+00:46:12.571844 == Info: Connected to ::1 (::1) port 8996 (#0)
+00:46:12.571904 <= Recv header, 32 bytes (0x20)
+0000: 220-        _   _ ____  _     
+00:46:12.571954 <= Recv header, 32 bytes (0x20)
+0000: 220-    ___| | | |  _ \| |    
+00:46:12.571985 <= Recv header, 32 bytes (0x20)
+0000: 220-   / __| | | | |_) | |    
+00:46:12.572106 <= Recv header, 32 bytes (0x20)
+0000: 220-  | (__| |_| |  _ <| |___ 
+00:46:12.572137 <= Recv header, 32 bytes (0x20)
+0000: 220    \___|\___/|_| \_\_____|
+00:46:12.572751 => Send header, 16 bytes (0x10)
+0000: USER anonymous
+00:46:12.572792 <= Recv header, 33 bytes (0x21)
+0000: 331 We are happy you popped in!
+00:46:12.573339 => Send header, 22 bytes (0x16)
+0000: PASS ftp@example.com
+00:46:12.573379 <= Recv header, 30 bytes (0x1e)
+0000: 230 Welcome you silly person
+00:46:12.573846 => Send header, 5 bytes (0x5)
+0000: PWD
+00:46:12.573884 <= Recv header, 30 bytes (0x1e)
+0000: 257 "/" is current directory
+00:46:12.573908 == Info: Entry path is '/'
+00:46:12.575046 => Send header, 20 bytes (0x14)
+0000: EPRT |2|::1|42111|
+00:46:12.575094 <= Recv header, 50 bytes (0x32)
+0000: 200 Thanks for dropping by. We contact you later
+00:46:12.575117 == Info: Connect data stream actively
+00:46:12.575235 => Send header, 8 bytes (0x8)
+0000: TYPE A
+00:46:12.578539 <= Recv header, 33 bytes (0x21)
+0000: 200 I modify TYPE as you wanted
+00:46:12.578591 => Send header, 6 bytes (0x6)
+0000: LIST
+00:46:12.579356 <= Recv header, 28 bytes (0x1c)
+0000: 150 here comes a directory
+00:46:12.579390 == Info: Maxdownload = -1
+00:46:12.579401 == Info: Preparing for accepting server on data port
+00:46:12.579418 == Info: Checking for server connect
+00:46:12.579429 == Info: Ready to accept data connection from server
+00:46:12.579469 == Info: Connection accepted from server
+00:46:12.579677 <= Recv data, 10 bytes (0xa)
+0000: total 20
+00:46:12.579901 <= Recv data, 57 bytes (0x39)
+0000: drwxr-xr-x   8 98       98           512 Oct 22 13:06 .
+00:46:12.580049 <= Recv data, 58 bytes (0x3a)
+0000: drwxr-xr-x   8 98       98           512 Oct 22 13:06 ..
+00:46:12.580213 <= Recv data, 61 bytes (0x3d)
+0000: drwxr-xr-x   2 98       98           512 May  2  1996 .NeXT
+00:46:12.580368 <= Recv data, 62 bytes (0x3e)
+0000: -r--r--r--   1 0        1             35 Jul 16  1996 README
+00:46:12.580522 <= Recv data, 70 bytes (0x46)
+0000: lrwxrwxrwx   1 0        1              7 Dec  9  1999 bin -> usr
+0040: /bin
+00:46:12.581709 <= Recv data, 305 bytes (0x131)
+0000: dr-xr-xr-x   2 0        1            512 Oct  1  1997 dev
+003b: drwxrwxrwx   2 98       98           512 May 29 16:04 download.h
+007b: tml
+0080: dr-xr-xr-x   2 0        1            512 Nov 30  1995 etc
+00bb: drwxrwxrwx   2 98       1            512 Oct 30 14:33 pub
+00f6: dr-xr-xr-x   5 0        1            512 Oct  1  1997 usr

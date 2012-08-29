@@ -1,0 +1,5 @@
+00:46:12.673007 == Info: About to connect() to ::1 port 8996 (#0)
+00:46:12.673198 == Info:   Trying ::1...
+00:46:12.674245 == Info: Connection refused
+00:46:12.674325 == Info: couldn't connect to host
+00:46:12.674350 == Info: Closing connection #0

@@ -1,0 +1,48 @@
+00:46:12.577476 ====> Client connect
+00:46:12.577715 Running IPv6 version
+00:46:12.577749 Connected to port 42111
+00:46:12.577822 Wrote pid 25066 to ./.ftp_ipv6_sockdata.pid
+00:46:12.577879 Received PING (on stdin)
+00:46:12.579520 Received DATA (on stdin)
+00:46:12.579569 > 10 bytes data, server => client
+00:46:12.579603 'total 20\r\n'
+00:46:12.579764 Received DATA (on stdin)
+00:46:12.579802 > 57 bytes data, server => client
+00:46:12.579839 'drwxr-xr-x   8 98       98           512 Oct 22 13:06 .\r\n'
+00:46:12.579896 Received DATA (on stdin)
+00:46:12.579931 > 58 bytes data, server => client
+00:46:12.579968 'drwxr-xr-x   8 98       98           512 Oct 22 13:06 ..\r\n'
+00:46:12.580047 Received DATA (on stdin)
+00:46:12.580083 > 61 bytes data, server => client
+00:46:12.580121 'drwxr-xr-x   2 98       98           512 May  2  1996 .NeXT\r'
+00:46:12.580152 '\n'
+00:46:12.580204 Received DATA (on stdin)
+00:46:12.580239 > 62 bytes data, server => client
+00:46:12.580276 '-r--r--r--   1 0        1             35 Jul 16  1996 README\r'
+00:46:12.580307 '\n'
+00:46:12.580359 Received DATA (on stdin)
+00:46:12.580393 > 70 bytes data, server => client
+00:46:12.580430 'lrwxrwxrwx   1 0        1              7 Dec  9  1999 bin -> '
+00:46:12.580462 'usr/bin\r\n'
+00:46:12.580514 Received DATA (on stdin)
+00:46:12.580547 > 59 bytes data, server => client
+00:46:12.580585 'dr-xr-xr-x   2 0        1            512 Oct  1  1997 dev\r\n'
+00:46:12.580639 Received DATA (on stdin)
+00:46:12.580673 > 69 bytes data, server => client
+00:46:12.580712 'drwxrwxrwx   2 98       98           512 May 29 16:04 downloa'
+00:46:12.580744 'd.html\r\n'
+00:46:12.580797 Received DATA (on stdin)
+00:46:12.580831 > 59 bytes data, server => client
+00:46:12.580868 'dr-xr-xr-x   2 0        1            512 Nov 30  1995 etc\r\n'
+00:46:12.580921 Received DATA (on stdin)
+00:46:12.580955 > 59 bytes data, server => client
+00:46:12.580993 'drwxrwxrwx   2 98       1            512 Oct 30 14:33 pub\r\n'
+00:46:12.581048 Received DATA (on stdin)
+00:46:12.581082 > 59 bytes data, server => client
+00:46:12.581120 'dr-xr-xr-x   5 0        1            512 Oct  1  1997 usr\r\n'
+00:46:12.581175 Received DISC (on stdin)
+00:46:12.581638 ====> Client forcibly disconnected
+00:46:12.581706 disconnected, no socket to read on
+00:46:12.581746 Received QUIT (on stdin)
+00:46:12.581777 quits
+00:46:12.581819 ============> sockfilt quits

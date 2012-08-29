@@ -1,0 +1,2 @@
+machine supersite.com login user1 password passwd1
+machine anotherone.com login user2 password passwd2

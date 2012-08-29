@@ -1,0 +1,5 @@
+00:46:12.986192 == Info: About to connect() to proxy 127.0.0.1 port 8990 (#0)
+00:46:12.986417 == Info:   Trying 127.0.0.1...
+00:46:12.987458 == Info: Connection refused
+00:46:12.987535 == Info: couldn't connect to host
+00:46:12.987553 == Info: Closing connection #0

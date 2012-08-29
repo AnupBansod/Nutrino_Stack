@@ -1,0 +1,3 @@
+00:46:12.607874 select() failed with error: (4) Interrupted system call
+00:46:12.609754 signalled to die
+00:46:12.609869 ========> IPv6 sws (port: 8994 pid: 24822) exits with signal (2)

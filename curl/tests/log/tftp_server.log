@@ -1,0 +1,4 @@
+00:46:13.227235 Wrote pid 25327 to .tftp_server.pid
+00:46:13.227385 Running IPv4 version on port UDP/8997
+00:46:13.814955 signalled to die
+00:46:13.815129 ========> IPv4 tftpd (port: 8997 pid: 25327) exits with signal (2)

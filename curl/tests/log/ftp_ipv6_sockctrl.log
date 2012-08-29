@@ -1,0 +1,51 @@
+00:46:12.568943 ====> Client connect
+00:46:12.569715 Received DATA (on stdin)
+00:46:12.569786 > 32 bytes data, server => client
+00:46:12.569847 '220-        _   _ ____  _     \r\n'
+00:46:12.569949 Received DATA (on stdin)
+00:46:12.570008 > 32 bytes data, server => client
+00:46:12.570067 '220-    ___| | | |  _ \| |    \r\n'
+00:46:12.570150 Received DATA (on stdin)
+00:46:12.570206 > 32 bytes data, server => client
+00:46:12.570265 '220-   / __| | | | |_) | |    \r\n'
+00:46:12.570346 Received DATA (on stdin)
+00:46:12.570401 > 32 bytes data, server => client
+00:46:12.570459 '220-  | (__| |_| |  _ <| |___ \r\n'
+00:46:12.570539 Received DATA (on stdin)
+00:46:12.570595 > 32 bytes data, server => client
+00:46:12.570654 '220    \___|\___/|_| \_\_____|\r\n'
+00:46:12.572224 < 16 bytes data, client => server
+00:46:12.572271 'USER anonymous\r\n'
+00:46:12.572607 Received DATA (on stdin)
+00:46:12.572652 > 33 bytes data, server => client
+00:46:12.572689 '331 We are happy you popped in!\r\n'
+00:46:12.572904 < 22 bytes data, client => server
+00:46:12.572942 'PASS ftp@example.com\r\n'
+00:46:12.573199 Received DATA (on stdin)
+00:46:12.573241 > 30 bytes data, server => client
+00:46:12.573278 '230 Welcome you silly person\r\n'
+00:46:12.573428 < 5 bytes data, client => server
+00:46:12.573463 'PWD\r\n'
+00:46:12.573708 Received DATA (on stdin)
+00:46:12.573750 > 30 bytes data, server => client
+00:46:12.573786 '257 "/" is current directory\r\n'
+00:46:12.574003 < 20 bytes data, client => server
+00:46:12.574044 'EPRT |2|::1|42111|\r\n'
+00:46:12.574866 Received DATA (on stdin)
+00:46:12.574930 > 50 bytes data, server => client
+00:46:12.574970 '200 Thanks for dropping by. We contact you later\r\n'
+00:46:12.575158 < 8 bytes data, client => server
+00:46:12.575196 'TYPE A\r\n'
+00:46:12.578356 Received DATA (on stdin)
+00:46:12.578411 > 33 bytes data, server => client
+00:46:12.578448 '200 I modify TYPE as you wanted\r\n'
+00:46:12.578631 < 6 bytes data, client => server
+00:46:12.578668 'LIST\r\n'
+00:46:12.579181 Received DATA (on stdin)
+00:46:12.579230 > 28 bytes data, server => client
+00:46:12.579267 '150 here comes a directory\r\n'
+00:46:12.581501 Received DATA (on stdin)
+00:46:12.581552 > 29 bytes data, server => client
+00:46:12.581588 '226 ASCII transfer complete\r\n'
+00:46:12.605494 signalled to die, exiting...
+00:46:12.605734 ============> sockfilt exits with signal (2)
