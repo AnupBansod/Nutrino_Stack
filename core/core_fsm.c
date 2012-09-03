@@ -36,7 +36,12 @@ static int EndComm(void)
 
 int GetNextEvent()
 {
-  return EV_KEYPRESS;
+  struct msgbuff *sbuf2;
+  message_queue_read( QUEUE_READ_FROM_DEVICE, sbuf2);
+  printf("%s\n", sbuf2->mtext);
+  if(sbuf->type == 1)
+    return EV_KEYPRESS;
+  return EV_TERM;
 }
 
 // Main Method
