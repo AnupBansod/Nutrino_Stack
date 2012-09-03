@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Handler message type for toast in Open NFC service. In arg2 found {@link 
+		android.widget.Toast#LENGTH_LONG} or {@link android.widget.Toast#LENGTH_SHORT}. 
+		In obj the message to print. -->
+	<item name="OpenNfcMessageToast" type="id"></item>
+	<!-- Handler message type for refresh package list in Open NFC service. -->
+	<item name="OpenNfcMessageRefreshPackageList" type="id"></item>
+</resources>
