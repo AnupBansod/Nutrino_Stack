@@ -1,0 +1,1038 @@
+home=true
+page.title=Open NFC for Android Edition
+@jd:body
+
+<div id="mainBodyFluid">
+
+<center>
+<img src="Explanations_files/image001.png" alt="Open NFC">
+
+<h1>Open NFC for Android - Developer's Manual</h1>
+
+<table border=0 cellspacing=0 cellpadding=0>
+<tr> <td>Functional Specification</td> </tr>
+<tr> <td>Reference SIS_NFC_1006-198 Version 1.2 </td></tr>
+<tr> <td>Copyright 2010-2011 Inside Secure</td></tr>
+</table>
+
+
+</center>
+
+<h1>Disclaimer</h1>
+
+<p>Licensed under the Apache License, Version 2.0 (the "License");you may not use this file except in compliance with the License.You may obtain a copy of the License at <a href="http://www.apache.org/licenses/LICENSE-2.0"> Apache 2.0 </a></p>
+<p>Inside Secure retains the right to make changes to this specification at any time, without notice.</p>
+<p>Copyright &copy; 2010-2011 Inside Secure.</p>
+<p>Open NFC and the Open NFC logo are trademarks or registered trademarks of Inside Secure.</p>
+<p>Other brand, product and company names mentioned herein may be trademarks, registered trademarks or trade names of their respective owners.</p>
+
+
+<h1>NFC Tags</h1>
+
+<p>The NFC tag API is used to generate or to parse NFC Tags containing NDEF messages as defined by the NFC Forum (http://www.nfcforum.org)</p>
+
+<p>The following items are managed by the API:</p>
+<ul>
+	<li>NFC Tags</li>
+	<li>NDEF Messages</li>
+	<li>NDEF Records</li>
+	<li>NDEF Message included in record payload.</li>
+</ul>
+
+<p>The API provides all the functions required:</p>
+<ul>
+<li>to build new records or new messages,</li>
+<li>to parse records and messages,</li>
+<li>to read NDEF messages from tags, and</li>
+<li>to write NDEF message into the tags.</li>
+</ul>
+
+<h2>Overview</h2>
+
+<h3>Types of NFC Tags</h3>
+
+<p>Several tag types are defined to store the NDEF messages. The difference between the tags is the capacity of the tag and the capability to lock the tag.<br/>
+<br/>
+The following table describes the tag types:</p>
+
+<table>
+<tr> <th>Tag Type</th> <th>Useful capacity for the NDEF message</th> <th>Can be locked</th> </tr>
+<tr> <td>Type 1</td> <td>96 bytes or 512 bytes</td> <td>yes</td> </tr>
+<tr> <td>Type 2</td> <td>48 bytes or 148 bytes</td> <td>yes</td> </tr>
+<tr> <td>Type 3</td> <td>depends on the tag</td> <td>yes</td> </tr>
+<tr> <td>Type 4</td> <td>depends on the tag</td> <td>no</td> </tr>
+<tr> <td>Type 5</td> <td>232 bytes or 4048 bytes</td> <td>yes</td> </tr>
+<tr> <td>Type 6</td> <td>depends on the tag</td> <td>yes</td> </tr>
+</table>
+
+
+<h3>Implicit Handling of the Flags</h3>
+
+<p>The NDEF API transparently generates and read the message begin flag (MB), the message end flag (ME), the short records identified by the SR flag, and the chunked records identified with the CR flag.</p>
+
+<h3><a name="ndef_type_name_format"></a>NDEF Type Name Format</h3>
+
+<p>The type of record (RTD) is defined by an integer and a string. The integer is the type definition described below. The meaning of the string depends on the value of the type definition.
+The string should contain only printable ASCII characters.<br/>
+<br/>
+The list of the type definition constants is the following:
+<table>
+<tr>
+	<th>Type</th>
+	<th>Description</th>
+	<th>Type String</th>
+</tr>
+
+<tr>
+	<td>EMPTY</td>
+
+	<td>Empty Record with no type or payload associated. When used, the TYPE_LENGTH, ID_LENGTH, and PAYLOAD_LENGTH fields are zero and the TYPE, ID, and PAYLOAD
+		 fields are thus omitted from the record. This TNF value can be used whenever an empty record is needed; for example, to terminate an NDEF message in
+		 cases where there is no payload defined by the user application.</td>
+
+	<td> Must be null. </td>
+</tr>
+
+<tr>
+	<td>WELL_KNOWN</td>
+	<td>NFC Forum well-known type. The TYPE field contains a value that follows the RTD type name format defined in the NFC Forum RTD specification.</td>
+	<td>The well-known RTD type name.</td>
+</tr>
+
+<tr>
+	<td>MEDIA</td>
+	<td>Media-type as defined in RFC 2046. The TYPE field contains a value that follows the media-type BNF construct defined by RFC 2046</td>
+	<td>The media-type BNF construct defined by RFC 2046</td>
+</tr>
+
+
+<tr>
+	<td>ABSOLUTE_URI</td>
+	<td>Absolute URI as defined in RFC 3986. The TYPE field contains a value that follows the absolute-URI BNF construct defined by RFC 3986.</td>
+	<td>The absolute-URI BNF construct defined by RFC 3986 using the printable representation as defined in 1.1.6 URI Format</td>
+</tr>
+
+<tr>
+	<td>EXTERNAL</td>
+	<td>NFC Forum external type. The TYPE field contains a value that follows the type name format defined for external type names.</td>
+	<td>The external name.</td>
+</tr>
+
+
+<tr>
+	<td>UNKNOWN</td>
+	<td>This value is used to indicate that the type of the payload is unknown. This is similar to the "application/octet-stream" media type defined by MIME (RFC 2046).
+	 When used, the TYPE_LENGTH field is zero and thus the TYPE field is omitted from the NDEF record.</td>
+	<td>Must be null.</td>
+</tr>
+
+<tr>
+	<td>UNCHANGED</td>
+	<td>Unchanged. This value is used in all middle record chunks and the terminating record chunk used in chunked payloads. It is not used in any other record.
+		When used, the TYPE_LENGTH field MUST be zero and thus the TYPE field is omitted from the NDEF record.</td>
+	<td>Must be null.</td>
+</tr>
+
+<tr>
+	<td>ANY_TYPE</td>
+	<td>Any type. This value is used with the read functions to read every message regardless of their type.</td>
+	<td>Must be null.</td>
+</tr>
+
+</table>
+
+
+<h3><a name="ndef_type_comparison"></a>NDEF Type Comparison</h3>
+<p>The comparison of two record types depends on the type definition.</p>
+<table>
+<tr>
+	<th>Type</th>
+	<th>Comparison Rules</th>
+</tr>
+
+<tr>
+	<td>EMPTY</td>
+	<td>Both record type names shall be null.</td>
+</tr>
+
+<tr>
+	<td>WELL_KNOWN</td>
+	<td>Before performing the comparison, the prefix urn:nfc:wkt: is removed from the type names, if present.<br/>
+		 <br/>
+		 Then both record type names shall be identical. The comparison is case-sensitive.</td>
+</tr>
+
+<tr>
+	<td>MEDIA</td>
+	<td>Comparison character-by-character in case-insensitive manner up to the first ";". </td>
+</tr>
+
+
+<tr>
+	<td>ABSOLUTE_URI</td>
+	<td>Before performing the comparison, the following operation are performed:
+			<ul>
+				<li>The reserved characters must be percent-encoded using uppercase letters for the hexadecimal digits.</li>
+				<li>The scheme and host parts of the URI must be normalized to lowercase.</li>
+			</ul>
+		 Then both record type names shall be identical. The comparison is case-sensitive.</td>
+</tr>
+
+<tr>
+	<td>EXTERNAL</td>
+	<td>Before performing the comparison, the prefix urn:nfc:ext: is removed from the type names, if present.<br>
+		<br/>
+		Then both record type names shall be identical. The comparison is case-insensitive.</td>
+</tr>
+
+<tr>
+	<td>UNKNOWN</td>
+	<td>Both record type names shall be null.<br>
+</tr>
+
+<tr>
+	<td>UNCHANGED</td>
+	<td>Both record type names shall be null.<br>
+</tr>
+
+<tr>
+	<td>ANY_TYPE</td>
+	<td>Always true.<br>
+</tr>
+
+</table>
+
+<h3><a name="ndef_id_format"></a>NDEF Record Identifier</h3>
+
+<p>Each NDEF record may include an optional identifier. Record identifiers are URI defined in the specification document <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>. When present,
+the identifier may be used to identify a record within a message.</p>
+
+<p><strong>Identifier Encoding</strong></p>
+<p>The URI are encoded in the record following the UTF8 encoding as defined in the next section.</p>
+
+
+<p><strong>Uniqueness Encoding</strong></p>
+<p>Each time a record is added to a message, the API implementation checks that the identifier of the record is not already present in a record of the message.
+An error is returned if the identifier is already in the message. If the record has no identifier,
+there is no check. </p>
+
+<h3><a name="ndef_uri_format"></a>URI format</h3>
+
+<p>The URI format is defined in the specification document <a href="http://tools.ietf.org/html/rfc3986">RFC 3986</a>.</p>
+
+<p>The NFC software stack uses three encoding of the URI string as defined in RFC 3986: The UTF8 encoding, the printable representation and the ASCII encoding.</p>
+
+<p>The following figure describes the different encoding of the URIs:
+
+<center><img src="./Explanations_files/image002.png" alt="URI encoding"></center>
+
+
+
+<p><strong>UTF8 Encoding</strong></p>
+
+<p>The UTF8 representation is the UTF8 encoding of the URI string without escapement.</p>
+
+<p><strong>Printable Representation</strong></p>
+
+<p>The printable representation is the encoding of the URI string with escapement. The following ASCII characters are left unchanged:<br/>
+<br/>
+':', '/', '?', '#', '[', ']', '@','!', '$', '&', ''', '(', ')',<br/>
+<br/>
+'*', '+', ',', ';', '=', '-', '.', '_', '~'<br/>
+<br/>
+['a', 'z'], ['A', 'Z'], ['0', '9']<br/>
+</p>
+
+
+<p>The other characters are encoded as follows:
+<ul>
+<li>For the characters in the range [0x00, 0xFF], a percent character '%' followed by the two upper-case hexadecimal digits of character value.</li>
+<li>For the other Unicode characters, the characters '%u' followed by the four upper-case hexadecimal digits of character value.</li>
+</ul>
+
+<p><strong>ASCII Encoding</strong></p>
+
+<p>The ASCII representation is the ASCII encoding of the URI string without escapement. Of course this representation is limited to the URI using characters in the range [0x00, 0xFF] only.</p>
+
+<h2><a name="nfc_tag_manager"></a>NFC Tag Manager</h2>
+
+<p>Depending on the client application requirements, several functions are provided to access a NFC tag.</p>
+
+<p><strong>First Use-Case:</strong></p>
+<ul>
+<li>The application wants to use only already formatted NFC tags and non formatted NFC tags.</li>
+<li>The application wants to perform a <u>single</u> NDEF operation on the first valid NFC tag presented. </li>
+</ul>
+
+<p>In this case, the simplest way is to use the methods NfcTagManager.registerMessageReader() or NfcTagManager.writeMessageOnAnyTag ().</p>
+
+<p><strong>Second Use-Case:</strong></p>
+<ul>
+<li>The application wants to use only already formatted NFC tags and non formatted NFC tags.</li>
+<li>The application wants to perform <u>several</u> NDEF operations on the tags. </li>
+</ul>
+<p>In this case, the client application must register a handler for the NFC tags, using  NfcTagManager.registerTagListener().
+Once the tag presented and the connection established, the application uses the methods NfcTagConnection.readMessage() and
+NfcTagConnection.writeMessage() to read / write NDEF messages from / into the tag.</p>
+
+<p><strong>Third Use-Case:</strong></p>
+<ul>
+<li>Same as first use case, but the application also wants to use only a specific NFC tag type or a subset of all NFC tags type supported.</li>
+</ul>
+
+<p>In this case, the client application must register a handler for the NFC tag types or the corresponding chips, using card listener registry
+CardListenerRegistry. Once a tag is presented, the application checks if the tag is already formatted (using the connections properties).
+If the tag is not formatted, the application must use NfcTagConnection.writeMessage() to format the tag. Once the tag is formatted,
+the application can use methods NfcTagConnection.readMessage()and NfcTagConnection.writeMessage() to read / write NDEF messages from / into the tag.</p>
+
+<p><strong><a name="nfc_formatting_support"></a>Formatting Support:</strong></p>
+<p>We distinguish several states for a NFC tag:</p>
+<ul>
+<li>Blank: The tag is empty and not formatted: its content has not been modified after the production of the tag.</li>
+<li>Non-NDEF: The tag is not formatted for NDEF usage but is contains data, the content of the tag differs from the default content of the tag after production.</li>
+<li>NDEF Empty: The tag has been formatted in NDEF format, but do not contain any NDEF record or any proprietary data included in the NDEF format.</li>
+<li>NDEF: The tag has been formatted in NDEF format and contains at least one NDEF record or some proprietary data included in the NDEF format.</li>
+</ul>
+
+<p>Below a table showing the different tag states supported by the functions:</p>
+<table>
+<tr><th rowspan=2>Methods</th><th colspan=4>Tag status</th>
+<tr><th>Blank</th> <th>Non-NDEF</th> <th>NDEF Empty</th> <th>NDEF</th></tr>
+<tr><td>NfcTagConnection.readMessage()</td> <td>no</td> <td>no</td> <td>yes</td> <td>yes</td></tr>
+<tr><td>NfcTagManager.registerMessageReader()</td> <td>no</td> <td>no</td> <td>yes</td> <td>yes</td></tr>
+<tr><td>NfcTagConnection.writeMessage()</td> <td>yes (1)</td> <td>yes (1)</td> <td>yes</td> <td>yes</td></tr>
+<tr><td>NfcTagManager.writeMessageOnAnyTag ()</td> <td>yes (1)</td> <td>yes (1)</td> <td>yes</td> <td>yes</td></tr>
+</table>
+
+
+<p>(1)  Blank tag support is available only if ACTION_BIT_FORMAT_BLANK_TAG, ACTION_BIT_FORMAT_NON_NDEF_TAG  or ACTION_BIT_FORMAT_ALL bit is set in the actionFlags parameter.</p>
+<p>(2)  Tags that contain non NDEF contents support is available only if ACTION_BIT_FORMAT_NON_NDEF_TAG or ACTION_BIT_FORMAT_ALL bit is set in the actionFlags parameter.</p>
+
+<p>The following table explains the change of tag status caused by the formatting flags:</p>
+
+<table>
+<tr><th rowspan=2>Formatting flags</th><th colspan=4> Initial Tag status</th>
+<tr><th>Blank</th> <th>Non-NDEF</th> <th>NDEF Empty</th> <th>NDEF</th></tr>
+<tr><td>ACTION_BIT_FORMAT_BLANK_TAG</td> <td>NDEF Empty</td> <td>no change</td> <td>no change</td> <td>no change</td></tr>
+<tr><td>ACTION_BIT_FORMAT_NON_NDEF_TAG</td> <td>NDEF Empty</td> <td>NDEF Empty(1)</td> <td>no change</td> <td>no change</td></tr>
+<tr><td>ACTION_BIT_FORMAT_ALL</td> <td>NDEF Empty</td> <td>NDEF Empty(1)</td> <td>no change</td> <td>NDEF Empty (2)</td></tr>
+</table>
+
+<p>(1) The data included in the tag are erased</p>
+<p>(2) The proprietary data included in the NDEF format, if any, are erased</p>
+
+<p>Using ACTION_BIT_FORMAT_BLANK_TAG option prevents to format tags that may contents valuable non NDEF information, since it allows formatting of tags that were not modified after their production.</p>
+
+
+<p><strong>Getting Tag Information</strong></p>
+<p>The methods of the NFC tag connection NfcTagConnection returns the information on a tag:</p>
+<ul>
+<li>the free size on the tag,</li>
+<li>the serial number of the tag, and</li>
+<li>the lock status.</li>
+</ul>
+
+<h2><a name="ndef_text_record"></a>Text Records</h2>
+<p>Text records define the format in which to store a localized text in a NDEF message. Text records are handled with the class TextRecord.</p>
+
+<h3><a name="rtd_text_language_format"></a>The Language Format</h3>
+
+<p>The format of the language in the text record is defined in the RFC 3066 "Tags for the Identification of Languages", H. Alvestrand, Cisco Systems, January 2001
+<a href="http://www.faqs.org/rfcs/rfc3066.html"> (http://www.faqs.org/rfcs/rfc3066.html)</a>.</p>
+
+<p>The language code is typically either two characters or five characters, though in the future, it is likely that it will be possible to have longer codes.
+The two-character version disregards any dialects, and thus is used most often.  For example, "fi" for Finnish, "jp" for Japanese, "fr" for French.
+However, in some cases you might want to differentiate between variants of the same language, such as providing US-English and British English versions via "en-US" and "en-UK" respectively.</p>
+
+
+<h3><a name="rtd_text_language_match"></a>Language Matching</h3>
+
+<p>This language comparison algorithm compares two language codes and returns one of the following value:
+"exact match" if the two languages match exactly, "partial match" if the two languages match partially and "no match" if the languages do not match.</p>
+
+<p>The text comparisons are case insensitive.</p>
+
+<p>The language matching algorithm consider only the language codes with two letters with a primary sub tag as defined in ISO 639, or the language codes with five letters,
+i.e. a primary and a secondary sub tag of two letters as defined in ISO 639 and ISO 3166.</p>
+
+<p>If one of the compared language codes is not in this category, the algorithm returns "exact match" if the two language codes are identical. Otherwise, the algorithm returns "no match".</p>
+
+<p>If a language code A is "&lt;A1&gt;" or "&lt;A1&gt;-&lt;A2&gt;" and a language code B is "&lt;B1&gt;" or "&lt;B1&gt;-&lt;B2&gt;", the following table gives the results of the comparison of A and B:</p>
+<table>
+<tr>	<th>Language A</th> 	<th>Language B</th> 	<th>Condition</th> 	<th>Result</th></tr>
+
+<tr>	<td>&lt;A1&gt;</td> 	<td>&lt;B1&gt;</td> 	<td>A1 != B1</td> 	<td>No match</td>	</tr>
+<tr>	<td></td> 				<td></td> 				<td>A1  = B1</td> 	<td>Exact match</td>	</tr>
+
+<tr>	<td>&lt;A1&gt;-&lt;A2&gt;</td> 	<td>&lt;B1&gt;</td> 	<td>A1 != B1</td> 	<td>No match</td>	</tr>
+<tr>	<td></td> 				<td></td> 				<td>A1  = B1</td> 	<td>Partial match</td>	</tr>
+
+<tr>	<td>&lt;A1&gt;-&lt;A2&gt;</td> 	<td>&lt;B1&gt;-&lt;B2&gt;</td> 	<td>A1 != B1</td> 	<td>No match</td>	</tr>
+<tr>	<td></td> 				<td></td> 				<td>A1  = B1 and A2 != B2</td> 	<td>Partial match</td>	</tr>
+<tr>	<td></td> 				<td></td> 				<td>A1  = B1 and A2 = B2</td> 	<td>Exact match</td>	</tr>
+</table>
+
+
+<p>When the language of a text record is compared with two languages, the algorithm first looks for the best match with the primary language
+and if no match is found, it looks for the match with the secondary language.</p>
+
+
+
+<p>The following array defines the constants returned by the comparison functions:</p>
+<table>
+<tr> <th>Result Value</th> <th>Description</th> </tr>
+<tr> <td>TEXT_MATCH_1</td> <td>The primary language matches exactly the language of the record.</td> </tr>
+<tr> <td>TEXT_PARTIAL_MATCH_1</td> <td>The primary language matches partially the language of the record.</td> </tr>
+<tr> <td>TEXT_MATCH_2</td> <td>The secondary language matches exactly the language of the record.</td> </tr>
+<tr> <td>TEXT_PARTIAL_MATCH_2</td> <td>The secondary language matches partially the language of the record.</td> </tr>
+<tr> <td>TEXT_NO_MATCH_FOUND</td> <td>The languages do not match the language of the record.</td> </tr>
+</table>
+
+
+<h2><a name="ndef_uri_record"></a>URI Records</h2>
+
+<p>URI records define the format to store an URI value in a NDEF message. The URI format defined by the NFC forum includes a format compressed
+by tokenization of the URI prefix. This compressed format is implemented transparently by the class UriRecord.</p>
+
+<p>The URI strings used with UriRecord follow the printable representation of the URI as defined in "URI Format".</p>
+
+<p>An NDEF URI Record consists in:</p>
+<ul>
+<li>An URI identifier code, offering possibility to shorten the URI,</li>
+<li>A string containing the rest of the URI, or the entire URI, if URI identifier code is 0x00</li>
+</ul>
+
+<p><strong>Encoding an NDEF URI</strong></p>
+
+<p>Before being stored in the NDEF record, the URI value is processed as follows:
+<ul>
+<li>Parse the URI trying to identify a prefix of the "Abbreviation Table" (see Table 3 of the NFC Forum document NFCForum-TS-RTD_URI_1.0)</li>
+<li>If a prefix is recognized, the prefix is removed, and the URI identifier code is set to the corresponding value found in this table (e.g. the 11 characters "http://www. " will be replaced by the URI identifier code 0x01)</li>
+<li>otherwise, the URI identifier code is set to 0x00, and the URI string is kept unmodified.</li>
+</ul>
+
+<p>Examples:</p>
+<ul>
+
+<li><u>Simple URL with no substitution</u>
+
+<table>
+<tr> <th>www.open-nfc.org</th> </tr>
+</table>
+
+Open NFC does not find any matching prefix in the Abbreviation table, so
+<ul>
+<li>URI identifier code = 0x00,</li>
+<li>URI string = "www.open-nfc.org" unmodified.</li>
+</ul>
+
+<table>
+<tr> <th>Offset</th> <th>Content</th> <th>Explanation</th> </tr>
+<tr> <td>0 </td> <td>0xD1 </td> <td>SR = 1, TNF = 0x01 (NFC Forum Well Known Type), ME=1, MB=1 </td> </tr>
+<tr> <td>1 </td> <td>0x01 </td> <td>Length of the Record Type (1 byte)  </td> </tr>
+<tr> <td>2 </td> <td>0x11 </td> <td>Length of the payload (17 bytes) </td> </tr>
+<tr> <td>3 </td> <td>0x55 </td> <td>The Record Name ("U") </td> </tr>
+<tr> <td>4 </td> <td>0x00 </td> <td>No abbreviation</td> </tr>
+<tr> <td>5 </td> <td> 0x77 0x77 0x77 0x2E 0x6F 0x70 0x65 0x6E 0x2D 0x6E 0x66 0x63 0x2E 0x6F 0x72 0x67 </td> <td>The string "www.open-nfc.org".  (16 bytes)</td> </tr>
+</table>
+
+</li>
+
+<li><u>URL with known prefix</u>
+
+<table>
+<tr> <th>http://www.open-nfc.org</th> </tr>
+</table>
+
+<p>Open NFC finds a matching prefix in the abbreviation table ( "http://www." ), so
+<ul>
+<li>URI identifier code = 0x01,</li>
+<li>URI string = "open-nfc.org", compressed.</li>
+</ul>
+
+<table>
+<tr> <th>Offset</th> <th>Content</th> <th>Explanation</th> </tr>
+<tr> <td>0 </td> <td>0xD1 </td> <td>SR = 1, TNF = 0x01 (NFC Forum Well Known Type), ME=1, MB=1 </td> </tr>
+<tr> <td>1 </td> <td>0x01 </td> <td>Length of the Record Type (1 byte)  </td> </tr>
+<tr> <td>2 </td> <td>0x0B </td> <td>Length of the payload (13 bytes) </td> </tr>
+<tr> <td>3 </td> <td>0x55 </td> <td>The Record Name ("U") </td> </tr>
+<tr> <td>4 </td> <td>0x01 </td> <td>URI identifier ("http://www.") </td> </tr>
+<tr> <td>5 </td> <td> 0x6F 0x70 0x65 0x6E 0x2D 0x6E 0x66 0x63 0x2E 0x6F 0x72 0x67 </td> <td>The compressed string "open-nfc.org". (12 bytes)</td> </tr>
+</table>
+
+</li>
+
+</ul>
+
+<p><strong>Decoding an NDEF URI</strong></p>
+
+<p>When an NDEF URI Record is read on a tag, Open NFC automatically appends the prefix, corresponding to the URI identifier code, to the URI string, so the caller application has no more process to perform in order to use the URI detected on the tag.</p>
+
+<h1><a name="nfc_controller"></a>NFC Controller</h1>
+
+<p>The RF and NFC Controller tests are used to control and to test the functionalities of the following elements:
+<ul>
+<li>the software stack,</li>
+<li>the NFC Controller hardware</li>
+<li>the NFC Controller firmware</li>
+<li>the NFC RF modem and</li>
+<li>the NFC RF antenna.</li>
+</ul>
+
+<h2><a name="nfcc_modes"></a>The NFC Controller Modes</h2>
+
+
+<p>The NFC Controller behavior is defined by a mode of execution. The following table defines the constants representing the NFC Controller modes:</p>
+<table>
+<tr> <th> Constant</th> <th> Description </th> <th> Type of Activity </th> </tr>
+
+<tr> <td> BOOT_PENDING</td> <td> A boot procedure is pending. </td> <td> Boot Sequence </td> </tr>
+
+<tr> <td> MAINTENANCE</td> <td> Maintenance mode, the firmware can be used. </td> <td rowspan=3> Maintenance Modes </td> </tr>
+<tr> <td> NO_FIRMWARE</td> <td> Maintenance mode, no firmware is present. </td>
+<tr> <td> FIRMWARE_NOT_SUPPORTED</td> <td> Maintenance mode, the version of the firmware is not supported by the stack </td>
+
+<tr> <td> NOT_RESPONDING</td> <td> The NFC Controller is not responding.</td> <td rowspan=2> Error Modes </td> </tr>
+<tr> <td> LOADER_NOT_SUPPORTED</td> <td> The version of the loader is not supported.</td>
+
+
+<tr> <td> ACTIVE</td> <td> The NFC Controller is active.</td> <td rowspan=4> Activity Modes </td> </tr>
+<tr> <td> SWITCH_TO_STANDBY</td> <td> The NFC Controller is switching from active mode to standby mode</td>
+<tr> <td> STANDBY</td> <td> The NFC Controller is in standby mode</td>
+<tr> <td> SWITCH_TO_ACTIVE</td> <td>  The NFC Controller is switching from standby mode to active mode</td>
+</table>
+
+<p>The mode state diagram is illustrated in the following figure:</p>
+<img src="Explanations_files/image003.png" alt="The NFC controller modes">
+
+<h3>Boot Sequence</h3>
+<p>When the NFC Controller is powered, the mode is "boot pending". The boot sequence switches automatically to the mode "active"
+if the stack can communicate with the NFC Controller firmware. If there is no firmware or if the firmware version is not supported,
+the boot procedure switches to one of the maintenance modes. If the NFC Controller is not responding or if the stack cannot communicate
+with the NFC Controller loader, the stack enters in the appropriate error mode. During the boot sequence, the mode is BOOT_PENDING.</p>
+
+<h3>Activity modes</h3>
+
+<p>In "active" mode, most of the NFC Controller functions can be executed, except the test functions. The method reset() is used to switch
+to the maintenance mode. If a critical error occurs with the NFC Controller, the stack enters in one of the error modes.</p>
+
+<p>The NFC Controller may switch from the "active" mode into the "standby" mode. The standby mode reduces the power consumption of the NFC Controller.</p>
+In standby mode, the RF cannot be used for reader mode. The NFC Controller may enter in standby mode for any of these reasons:
+<ul>
+<li>The method switchToStandbyMode() is called to switch in standby mode. In this case, the NFC Controller switches to standby mode even if there is a reader active. The reader activity will be cut off.</li>
+<li>There is no reader mode active and there is no communication with the NFC Controller for a given time. Then the NFC Controller switches spontaneously in standby mode.</li>
+</ul>
+
+
+<p>The value of the timeout used to switch to standby mode is given by the NFC Controller property "nfcc.standby_timeout".
+If this value is zero, the NFC Controller does not switch spontaneously in standby mode.</p>
+
+<p>The NFC Controller leaves the standby mode and returns to the activity mode for any of these reasons:</p>
+<ul>
+<li>The method switchStandbyMode() is called to switch in active mode.</li>
+<li>A reader field is detected. This may mean that a remote reader or a peer to peer device is in range.</li>
+<li>A function of the Client API is called and this function requires a communication with the NFC Controller.</li>
+</ul>
+
+
+<p>Whatever the cause of the wake up of the NFC Controller, the configuration and the behavior of the NFC Controller are identical
+before and after switching to standby mode. The RF modes (reader, card, P2P), the handles (registry, connection etc...) are still valid.
+In other words switching to standby mode is completely transparent for an application.</p>
+
+<p>The activity modes are the following:</p>
+<ul>
+<li>ACTIVE,</li>
+<li>SWITCH_TO_STANDBY,</li>
+<li>STANDBY, and</li>
+<li>SWITCH_TO_ACTIVE.</li>
+</ul>
+
+
+<h3>Maintenance Modes</h3>
+
+<p>The stack enters in one of the maintenance modes after a reset. The nature of the maintenance mode depends on the presence of a firmware
+and the capability of communicating with it. In maintenance mode, the test functions and the firmware update functions are accessible.</p>
+
+<p>The maintenance modes are the following:
+<ul>
+<li>MAINTENANCE,</li>
+<li>NO_FIRMWARE, and</li>
+<li>FIRMWARE_NOT_SUPPORTED.</li>
+</ul>
+
+<h3>Error Modes</h3>
+
+<p>The stack enters into an error mode if a critical error is detected during the communication with the NFC Controller.
+The only functions available in error mode are getMode(), registerExceptionEventHandler() and reset().</p>
+
+<p>The error modes are the following:
+<ul>
+<li>NOT_RESPONDING, and</li>
+<li>LOADER_NOT_SUPPORTED.</li>
+</ul>
+
+<h3>Function Availability</h3>
+
+<p>Depending on the current mode, a function may or may not be executed. If a function is called while the stack is not in right mode,
+the method throws the exception IllegalStateException. The following table describes the functions available in each mode:</p>
+
+
+<table>
+<tr> <th>Methods</th>
+	  <th>BOOT_PENDING</th>
+	  <th>MAINTENANCE</th>
+	  <th>NO FIRMWARE</th>
+	  <th>FIRMWARE NOT SUPPORTED</th>
+	  <th>NOT RESPONDING</th>
+	  <th>LOADER NOT SUPPORTED</th>
+	  <th>ACTIVE</th>
+	  <th>SWITCH TO STANDBY</th>
+	  <th>STANDBY</th>
+	  <th>SWITCH TO ACTIVE</th>
+</tr>
+
+<tr> <td>getMode()<br/>
+			registerExceptionEventHandler()</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+</tr>
+
+<tr> <td>Reset()</td>
+	  <td></td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+</tr>
+
+<tr> <td>firmwareUpdate()</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+</tr>
+
+<tr> <td>selfTest()<br/>
+		productionTest()</td>
+	  <td></td>
+	  <td>Yes</td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+</tr>
+
+<tr> <td>switchStandbyMode()</td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+</tr>
+
+<tr> <td>Other methods</td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td></td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+	  <td>Yes</td>
+</tr>
+
+</table>
+
+
+<h2><a name="_RF_Locks"></a>RF Locks</h2>
+
+<p>The RF lock properties are used by the NFC Controller to lock or unlock the RF functionalities. The RF locks are generally
+connected to the user configuration screen to enable or disable the contactless interface. There are three different locks, one
+for the card listener modes, one for the card emulation modes and one for the peer to peer modes.</p>
+
+<p>When the card listener lock, the card emulation lock or the peer to peer lock is set, the card listener API, the card emulation API
+or the peer to peer API respectively does not return any specific error but functions do not detect any remote card, any remote reader
+or any remote peer to peer device respectively. The effect of a volatile lock is immediate and will shut down any ongoing connection.</p>
+
+<p>The locking of the RF functionalities is effective for the NFC Device, for the UICC and for the Secure Element.</p>
+
+<p>There are two sets of locks: one is volatile and the other is persistent.</p>
+
+
+
+<p><strong>Volatile Locks</strong></p>
+
+<p>The NFC Device uses the volatile set of locks to control the access to the RF functionalities. Changing the volatile locks values
+has an immediate effect on the RF access. The value of the volatile set of locks is not kept between two reboots of the NFC Device
+or when the NFC Device switches of mode (Battery On, Battery Low or Battery Off).</p>
+
+<p>Changing the volatile set of locks allows changing immediately the RF access without changing the RF access in other modes
+(Battery Low or Battery Off) and without modification of the lock value when the NFC Device is rebooted. The volatile locks are managed
+with the properties "nfcc.lock.volatile.card_emulation" and "nfcc.lock.volatile.card_listener". These values
+may be used to display an icon on the user interface to notify the user of the availability of the contactless functionalities.</p>
+
+<p><strong>Persistent Locks</strong></p>
+
+<p>The persistent set of locks is stored persistently in the NFC Device. The value of the persistent set of lock is kept between two
+reboots of the NFC Device and when the NFC Device switches of mode (Battery On, Battery Low or Battery Off). The NFC Device does not
+use the persistent set of locks to control the access to the RF functionalities. At boot time or when the NFC Device switches of mode,
+the persistent lock values are copied in the volatile locks. Changing the persistent locks values has no immediate effect on the RF access.</p>
+
+<p>Changing the persistent set of locks allows changing the RF access the next time the NFC Device is booted or when the NFC Device is
+used in Battery Low or in Battery Off mode. The persistent locks are managed with the properties "nfcc.lock.persistent.card_emulation",
+and "nfcc.lock.persistent.card_listener".</p>
+
+
+<p><strong>RF Locks and Access Policies</strong></p>
+
+<p>The RF Locks supersede the Access Policies for the NFC Device, the UICC or the Secure Element. Before granting an access to the RF
+interface, the NFC Controller looks first to the corresponding policy then the corresponding RF lock is checked. The access is granted
+only if both the policy and the RF locks grant the access.</p>
+
+<h1><a name="nfc_controller_properties">NFC Properties</a></h1>
+
+
+<p>The NFC properties are accessed from the class NfcManager. The property methods may throw a SecurityException if the calling is
+not allowed to access a given property. The "Access" column gives the access right required to access each property. The following properties
+are defined:</p>
+
+<table>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Access</th>
+<th>Description</th>
+</tr>
+
+<tr>
+<td>open_nfc.version</td>
+<td>string, read-only</td>
+<td>nfc</td>
+<td>The version of the library. The maximum length of the value is 16 characters.</td>
+</tr>
+
+<tr>
+<td>open_nfc.implementation</td>
+<td>string, read-only</td>
+<td>nfc</td>
+<td>Describes the implementation of the library. The maximum length of the string is 64 characters.</td>
+</tr>
+
+<tr> <td colspan=4><strong>Card Listener</strong></td> </tr>
+
+<tr>
+<td>card_listen.iso_14443_A_cid</td>
+<td>boolean, read-only</td>
+<td>card listen</td>
+<td>Indicates if the CID is supported for the protocol ISO 14443 A in card listener mode.</td>
+</tr>
+
+<tr>
+<td>card_listen.iso_14443_A_input_size</td>
+<td>boolean, read-only</td>
+<td>card listen</td>
+<td>The maximum size in bytes for the input data buffer of the ISO 14443 A card listener. This value is sent by the NFC Controller in the RATS frame.</td>
+</tr>
+
+
+<tr>
+<td>card_listen.iso_14443_A_max_rate</td>
+<td>integer, read-only</td>
+<td>card listen</td>
+<td>The data rates supported by the NFC Controller for the ISO 14443 A card listener protocol(**). This value is set to zero if the protocol is not supported. The value is a bit field of 3 bits defining the DR value supported (See chapter 5.2.4 in ISO/IEC 14443-4). The string format of the property is the upper-case hexadecimal representation of this value, i.e. a zero ended string of 8 characters.</td>
+</tr>
+
+<tr>
+<td>card_listen.iso_14443_A_nad</td>
+<td>boolean, read-only</td>
+<td>card listen</td>
+<td>Indicates if the NAD is supported for the protocol ISO 14443 A in card listener mode.</td>
+</tr>
+
+<tr>
+<td>card_listen.iso_14443_B_cid</td>
+<td>boolean, read-only</td>
+<td>card listen</td>
+<td>Indicates if the CID is supported for the protocol ISO 14443 B in card listener mode.</td>
+</tr>
+
+<tr>
+<td>card_listen.iso_14443_B_input_size</td>
+<td>integer, read-only</td>
+<td>card listen</td>
+<td>The maximum size in bytes for the input data buffer of the ISO 14443 B card listener. This value is sent by the NFC Controller in the ATTRIB frame.</td>
+</tr>
+
+
+<tr>
+<td>card_listen.iso_14443_B_max_rate</td>
+<td>integer, read-only</td>
+<td>card listen</td>
+<td>The data rates supported by the NFC Controller for the ISO 14443 B card listener protocol (**). This value is set to zero if the protocol is not supported. The value is a bit field of 3 bits defining the DR value supported (See chapter 5.2.4 in ISO/IEC 14443-4).The string format of the property is the upper-case hexadecimal representation of this value, i.e. a zero ended string of 8 characters.</td>
+</tr>
+
+
+<tr>
+<td>card_listen.iso_14443_B_nad</td>
+<td>boolean, read-only</td>
+<td>card listen</td>
+<td>Indicates if the NAD is supported for the protocol ISO 14443 B in card listener mode</td>
+</tr>
+
+
+<tr> <td colspan=4><strong>Card Emulation</strong></td> </tr>
+
+<tr>
+<td>card_emul.iso_14443_A_max_rate</td>
+<td>integer, read-only</td>
+<td>card emulation</td>
+<td>The data rates supported by the NFC Controller for the ISO 14443 A card emulation protocol(**). The value is a bit field of 3 bits defining
+	 the DR value supported (See chapter 5.2.4 in ISO/IEC 14443-4). This value is set to zero if the protocol is not supported. The string format of
+	the property is the upper-case hexadecimal representation of this value, i.e. a zero ended string of 8 characters.</td>
+</tr>
+
+<tr>
+<td>card_emul.iso_14443_B_max_rate</td>
+<td>integer, read-only</td>
+<td>card emulation</td>
+<td>The data rates supported by the NFC Controller for the ISO 14443 B card emulation protocol(**). The value is a bit field of 3 bits defining
+	 the DR value supported (See chapter 5.2.4 in ISO/IEC 14443-4). This value is set to zero if the protocol is not supported. The string format
+	 of the property is the upper-case hexadecimal representation of this value, i.e. a zero ended string of 8 characters.</td>
+</tr>
+
+<tr>
+<td>card_emul.iso_14443_A_cid</td>
+<td>boolean, read-only</td>
+<td>card emulation</td>
+<td>Indicates if the CID is supported for the protocol ISO 14443 A in card emulation.</td>
+</tr>
+
+<tr>
+<td>card_emul.iso_14443_A_nad</td>
+<td>boolean, read-only</td>
+<td>card emulation</td>
+<td>Indicates if the NAD is supported for the protocol ISO 14443 A in card emulation.</td>
+</tr>
+
+<tr>
+<td>card_emul.iso_14443_A_cid</td>
+<td>boolean, read-only</td>
+<td>card emulation</td>
+<td>Indicates if the CID is supported for the protocol ISO 14443 B in card emulation.</td>
+</tr>
+
+<tr>
+<td>card_emul.iso_14443_A_nad</td>
+<td>boolean, read-only</td>
+<td>card emulation</td>
+<td>Indicates if the NAD is supported for the protocol ISO 14443 B in card emulation.</td>
+</tr>
+
+<tr> <td colspan=4><strong>Peer To Peer</strong></td> </tr>
+
+<tr>
+<td>p2p.supported</td>
+<td>boolean, read-only</td>
+<td>peer to peer</td>
+<td>Indicates if the Peer to Peer protocol is supported.</td>
+</tr>
+
+<tr> <td colspan=4><strong>NFC Controller</strong></td> </tr>
+
+<tr>
+<td>nfcc.nfc_hal_version</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>The version number of the NFC HAL specification used with the NFC stack. The string format of the property is the decimal representation of this value.</td>
+</tr>
+
+<tr>
+<td>nfcc.battery_low_supported</td>
+<td>boolean, read-only</td>
+<td>hardware</td>
+<td>Indicates if the "battery low" mode is supported by the NFC Controller.</td>
+</tr>
+
+<tr>
+<td>nfcc.battery_off_supported</td>
+<td>boolean, read-only</td>
+<td>hardware</td>
+<td>Indicates if the "battery off" mode is supported by the NFC Controller.</td>
+</tr>
+
+<tr>
+<td>nfcc.standby_supported</td>
+<td>boolean, read-only</td>
+<td>hardware</td>
+<td>Indicates if the "standby" mode is supported by the NFC Controller.</td>
+</tr>
+
+<tr>
+<td>nfcc.standby_timeout</td>
+<td>integer, read-only</td>
+<td>hardware</td>
+<td>The timeout in ms used to switch in standby mode. If no mode is active and
+	there is no communication with the NFC Controller during this timeout, the
+	NFC Controller switches to standby mode. This feature is disabled if the value is zero.</td>
+</tr>
+
+
+<tr>
+<td>nfcc.harware_version</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>Describes the type and version of the NFC Controller hardware. The maximum length of the string is 32 characters.</td>
+</tr>
+
+<tr>
+<td>nfcc.loader_version</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>Describes the version of the NFC Controller firmware loader. The maximum length of the string is 32 characters.</td>
+</tr>
+
+
+<tr>
+<td>nfcc.firmware_version</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>Describes the version of the NFC Controller firmware, including the build number. The maximum length of the string is 32 characters.</td>
+</tr>
+
+<tr>
+<td>nfcc.hardware_serial_number</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>Describes the serial number of the NFC Controller hardware This serial number is a 64 bit value. The format of the property is
+	the upper-case hexadecimal representation of this value, i.e. a zero ended string of 16 characters.</td>
+</tr>
+
+
+<tr>
+<td>nfcc.pulse_period</td>
+<td>integer, read-write</td>
+<td>hardware</td>
+<td>The pulse period used for the detection sequence is configurable. The pulse period value is not persistent. The NFC Controller
+	  initializes this parameter to a default value when the NFC Controller is booted. If a specific value shall be used, the NFC Device
+	  firmware should set this value each time the device is booted. The pulse period may be one of the configuration parameters given by the user.<br/>
+		<br/>
+		If the period value is high, the delay for the card detection may be high. A very low value causes a better responsiveness but increases the power consumption.<br/>
+		<br/>
+		The pulse period value in milliseconds. Depending of the NFC controller capabilities, the range of the allowed values may be restricted to a subset of valid values.
+		In this case, the value will be rounded to the nearest value supported by the NFC controller.
+		</td>
+</tr>
+
+<tr>
+<td>nfcc.lock.persistent.card_emulation</td>
+<td>boolean, read-write</td>
+<td>hardware</td>
+<td>The persistent value of the global RF lock for card emulation. See "RF Locks".</td>
+</tr>
+
+
+<tr>
+<td>nfcc.lock.persistent.card_listener</td>
+<td>boolean, read-write</td>
+<td>hardware</td>
+<td>The persistent value of the global RF lock for card listener. See "RF Locks".</td>
+</tr>
+
+<tr>
+<td>nfcc.lock.volatile.card_emulation</td>
+<td>boolean, read-write</td>
+<td>hardware</td>
+<td>The volatile value of the global RF lock for card emulation. See "RF Locks".</td>
+</tr>
+
+<tr>
+<td>nfcc.lock.volatile.card_listener</td>
+<td>boolean, read-write</td>
+<td>hardware</td>
+<td>The volatile value of the global RF lock for card listener. See "RF Locks".</td>
+</tr>
+
+<tr>
+<td>nfcc.activity.card_emulation</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>The current RF activity for the card emulation:
+	<ul>
+		<li>"active" One card protocol is active, a remote reader may be communicating with the card emulation or a Secure Element or the UICC are using the card emulation.</li>
+		<li>"detection" The NFC Controller is performing the detection sequence to detect the presence of a remote reader.</li>
+		<li>"inactive" The card emulation is not used. The security elements or the UICC are not performing a card emulation.</li>
+	</ul>
+	</td>
+</tr>
+
+
+<tr>
+<td>nfcc.activity.card_listener</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>The current RF activity for card listener:
+	<ul>
+	<li>"active" One reader protocol is active, one card is being read.</li>
+	<li>"detection" The NFC Controller is performing the detection sequence to detect a card.</li>
+	<li>"inactive" No card listener is registered. The Secure Elements or the UICC are not using the reader protocols. No reader protocol is active.</li>
+	</ul>
+	</td>
+</tr>
+
+
+<tr>
+<td>nfcc.activity.p2p</td>
+<td>string, read-only</td>
+<td>hardware</td>
+<td>The current RF activity for peer to peer:
+	<ul>
+		<li>"active" The Peer to Peer protocol is active, a remote device is communicating with the local device.</li>
+		<li>"detection" The NFC Controller is performing the detection sequence to detect the presence of a remote Peer to Peer device.</li>
+		<li>"inactive" The Peer to Peer protocol is not used.</li>
+	</ul>
+	</td>
+</tr>
+
+</table>
+
+<p>(**) The value is expressed as the maximum divisor supported in (ISO/IEC 14443-3) and (ISO/IEC 14443-4). Only the same divisor for both directions
+(reader to card and card to reader) is supported:</p>
+<ul>
+	<li>'00' = maximum divisor is 1</li>
+	<li>'01' = maximum divisor is 2</li>
+	<li>'02' = maximum divisor is 4</li>
+	<li>'03' = maximum divisor is 8</li>
+</ul>
+
+
+</div>

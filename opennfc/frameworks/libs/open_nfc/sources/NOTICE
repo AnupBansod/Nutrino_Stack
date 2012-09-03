@@ -1,0 +1,47 @@
+=========================================================================
+==  NOTICE file for use with the Apache License, Version 2.0,          ==
+==  for the distribution of the Open NFC software stack.               ==
+=========================================================================
+
+ Open NFC(TM)
+ Copyright (c) 2007-2010 Inside Secure, All Rights Reserved.
+
+ Picopass, Open NFC, the Open NFC logo, Wave-Me and the Wave-Me logo
+ are trademarks or registered trademarks of Inside Secure.
+
+ Other brand, product and company names mentioned herein may be trademarks,
+ registered trademarks or trade names of their respective owners.
+
+ This software includes an altered version of the files provided in the
+ implementation of the ZLIB library under the copyright notice printed below:
+
+--------------------------------------------------------------------------------
+  zlib.h -- interface of the 'zlib' general purpose compression library
+  version 1.2.3, July 18th, 2005
+
+  Copyright (C) 1995-2005 Jean-loup Gailly and Mark Adler
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  Jean-loup Gailly        Mark Adler
+  jloup@gzip.org          madler@alumni.caltech.edu
+
+  The data format used by the zlib library is described by RFCs (Request for
+  Comments) 1950 to 1952 in the files http://www.ietf.org/rfc/rfc1950.txt
+  (zlib format), rfc1951.txt (deflate format) and rfc1952.txt (gzip format).
+--------------------------------------------------------------------------------
+

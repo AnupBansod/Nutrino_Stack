@@ -1,0 +1,49 @@
+READ ME
+
+OpenNFC respects the following arborescence:
+\---packages
+    \---apps
+        \---OpenNFC
+            +---frameworks
+            |   +---libs
+            |   |   \---open_nfc
+            |   |       +---interfaces
+            |   |       +---porting
+            |   |       |   +---client
+            |   |       |   |   \---jni
+            |   |       |   |       \---headers
+            |   |       |   +---common
+            |   |       |   \---server
+            |   |       |       \---jni
+            |   |       \---sources
+            |   +---OpenNFCLibrary
+            |   |   \---java
+            |   |       \---org
+            |   |           \---opennfc
+            |   \---OpenNFCService
+            |       +---res
+            |       |   +---layout
+            |       |   \---values
+            |       \---src
+            |           \---org
+            |               \---opennfc
+            |                   \---service
+            +---hardware
+                \---libhardware
+                    +---include
+                    |   \---hardware
+                    \---modules
+                        \---nfcc
+                           +---driver
+                           +---interfaces
+                           +---porting
+                           \---sources
+
+ 
+Revision 10341
+ 
+The .\opennfc\hardware\libhardware\modules\nfcc\nfc_hal_microread\interfaces 
+must be populated with the content of the nfc_hal_microread\interfaces directory from the nfc_hal_microread package.
+  
+The .\opennfc\hardware\libhardware\modules\nfcc\nfc_hal_microread\sources
+must be populated with the content of the nfc_hal_microread\sources directory from the nfc_hal_microread package.

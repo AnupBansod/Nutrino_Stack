@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (c) 2010 Inside Secure, All Rights Reserved. Licensed under 
+	the Apache License, Version 2.0 (the "License"); you may not use this file 
+	except in compliance with the License. You may obtain a copy of the License 
+	at http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable 
+	law or agreed to in writing, software distributed under the License is distributed 
+	on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either 
+	express or implied. See the License for the specific language governing permissions 
+	and limitations under the License. -->
+
+<manifest
+	xmlns:android="http://schemas.android.com/apk/res/android"
+
+	package="org.opennfc.service"
+	android:sharedUserId="android.uid.system"
+>
+
+	<permission
+		android:name="org.opennfc.permission.HARDWARE"
+		android:label="@string/permlab_hardware"
+		android:description="@string/permdesc_hardware"
+		android:protectionLevel="signature" />
+
+	<permission
+		android:name="org.opennfc.permission.READER"
+		android:label="@string/permlab_reader"
+		android:description="@string/permdesc_reader"
+		android:protectionLevel="dangerous" />
+
+	<permission
+		android:name="org.opennfc.permission.CARD"
+		android:label="@string/permlab_card"
+		android:description="@string/permdesc_card"
+		android:protectionLevel="normal" />
+
+	<permission
+		android:name="org.opennfc.permission.P2P"
+		android:label="@string/permlab_card"
+		android:description="@string/permdesc_card"
+		android:protectionLevel="normal" />
+
+	<uses-permission
+		android:name="android.permission.NFC" />
+	<uses-permission
+		android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+	<uses-permission
+		android:name="android.permission.STATUS_BAR" />
+	<uses-permission
+		android:name="android.permission.WRITE_SECURE_SETTINGS" />
+	<uses-permission
+		android:name="android.permission.WAKE_LOCK" />
+	<uses-permission
+		android:name="android.permission.INTERNET" />
+
+	<application
+		android:label="Open NFC Service"
+	>
+		<uses-library
+			android:name="org.opennfc_library"
+		></uses-library>
+
+		<service
+			android:name=".OpenNFCService"
+			android:process=":remote"
+		>
+
+			<intent-filter>
+				<!-- These are the interfaces supported by the service, which you can 
+					bind to. -->
+				<action
+					android:name="org.opennfc.service.IOpenNFCService" />
+
+				<!-- This is an action code you can use to select the service without 
+					explicitly supplying the implementation class. -->
+				<action
+					android:name="org.opennfc.service.OPEN_NFC_SERVICE" />
+			</intent-filter>
+		</service>
+
+		<receiver
+			android:name=".OpenNFCBroadcastReceiver"
+			android:enabled="true"
+		>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.BOOT_COMPLETED" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.SCREEN_ON" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.SCREEN_OFF" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.PACKAGE_ADDED" />
+				<data
+					android:scheme="package" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.PACKAGE_CHANGED" />
+				<data
+					android:scheme="package" />
+			</intent-filter>
+			<intent-filter>
+				<action
+					android:name="android.intent.action.PACKAGE_REMOVED" />
+				<data
+					android:scheme="package" />
+			</intent-filter>
+		</receiver>
+
+		<service
+			android:name=".OpenNFCBackgoundService"
+			android:process=":remote"
+		>
+			<intent-filter>
+				<action
+					android:name="org.opennfc.service.OpenNFCBackgoundService.ACTION" />
+			</intent-filter>
+		</service>
+
+		<activity
+			android:name=".TechListChooserActivity"
+			android:theme="@*android:style/Theme.Dialog.Alert"
+			android:finishOnCloseSystemDialogs="true"
+			android:excludeFromRecents="true"
+			android:multiprocess="true" />
+
+		<activity
+			android:name="org.opennfc.tests.ActivityForInternalTests"
+		>
+			<intent-filter>
+				<action
+					android:name="android.nfc.action.TECH_DISCOVERED" />
+				<category
+					android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+			<meta-data
+				android:name="android.nfc.action.TECH_DISCOVERED"
+				android:resource="@xml/mock_filter_nfc" />
+		</activity>
+
+		<activity
+			android:name="org.opennfc.tests.ActivityForInternalTestsDispach" />
+
+		<activity
+			android:name="org.opennfc.tests.ActivityForInternalTestsPush" />
+
+		<activity
+			android:name="org.opennfc.tests.ActivityForInteranlTestsResultP2P" />
+	</application>
+
+</manifest>
+
