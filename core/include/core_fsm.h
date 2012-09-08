@@ -16,14 +16,25 @@ typedef struct {
 #define ST_READ              4
 #define ST_END               5
 
+//States for LED
+#define ST_GLOW_LED_INIT                    12301
+#define ST_GLOW_LED_SEND_TO_BOARD           12302
+
+
 //All the Events
 
 #define EV_ANY              -1
-#define EV_READ_FROM_DEVICE       5000
-#define EV_WRITE_TO_DEVICE        5001
-#define EV_READ_FROM_APP          5002
-#define EV_READDATA       5003
-#define EV_ENDSIG         5004
+#define EV_READ_FROM_DEVICE         5000
+#define EV_WRITE_TO_DEVICE          5001
+#define EV_READ_FROM_APP            5002
+#define EV_READDATA                 5003
+#define EV_ENDSIG                   5004
+
+
+//Events for LED
+#define EV_SEND_TO_CORE             12351
+#define EV_SEND_TO_DEVICE           12352
+#define EV_SEND_TO_APPLICATION      12353
 
 //All the transition Functions
 

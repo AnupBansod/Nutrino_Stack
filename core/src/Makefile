@@ -7,7 +7,7 @@ LDIR =../lib
 
 LIBS=-lm
 
-_DEPS =core_fsm.h queue_manager.h
+_DEPS =core_fsm.h queue_manager.h callback/callback.c
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
 _OBJ = core_fsm.o queue_manager.o
