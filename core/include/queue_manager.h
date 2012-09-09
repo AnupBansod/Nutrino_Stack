@@ -6,20 +6,18 @@
 
 #define MAXSIZE     128
 
-#define QUEUE_READ_FROM_DEVICE      10201
-#define QUEUE_WRITE_TO_DEVICE       10202
-#define QUEUE_READ_FROM_APPLICATION 10203
-#define QUEUE_WRITE_TO_APPLICATION  10204
-#define QUEUE_READ_FROM_UTILITY     10205
-#define QUEUE_WRITE_TO_UTILITY      10206
+#define QUEUE_DEVICE      10201
+#define QUEUE_APPLICATION 10202
+#define QUEUE_UTILITY     10203
+#define QUEUE_CORE        10204
 
 struct msgbuff
 {
     long    msg_session_id;
     long    msg_type;
-    char    msg_text[MAXSIZE];
     long    msg_state;
     long    msg_event;
+    char    msg_text[MAXSIZE];
 };
 
 int message_queue_init(key_t key);

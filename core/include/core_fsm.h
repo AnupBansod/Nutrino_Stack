@@ -18,8 +18,9 @@ typedef struct {
 
 //States for LED
 #define ST_GLOW_LED_INIT                    12301
-#define ST_GLOW_LED_SEND_TO_BOARD           12302
-
+#define ST_GLOW_LED_SEND_TO_DEVICE          12302
+#define ST_GLOW_LED_SEND_ACK                12303
+#define ST_ACK_SENDING                      12305
 
 //All the Events
 
@@ -32,9 +33,12 @@ typedef struct {
 
 
 //Events for LED
-#define EV_SEND_TO_CORE             12351
+#define EV_SEND_TO_CORE_NO_ACK      12351
 #define EV_SEND_TO_DEVICE           12352
-#define EV_SEND_TO_APPLICATION      12353
+#define EV_SEND_TO_CORE             12353
+#define EV_SEND_TO_APP              12354
+#define EV_SEND_TO_CORE_DEV_ACK     12355
+#define EV_SEND_TO_DEVICE_NO_ACK    12352
 
 //All the transition Functions
 
@@ -45,3 +49,9 @@ int ReadData (struct msgbuff) ;
 int EndComm (struct msgbuff) ;
 
 int GetNextEvent();
+
+
+
+//GLOW_LED_CALL_BACKS
+int Init_led(struct msgbuff) ;
+int Send_no_ack(struct msgbuff) ;

@@ -21,7 +21,7 @@ int message_queue_write(key_t key, struct msgbuff *sbuf )
       return -1;
     }
 
-    buflen = strlen(sbuf->msg_text) + 1 ;
+    buflen = strlen(sbuf->msg_text) + 1 + 12 ;
 
     if (msgsnd(msqid, sbuf, buflen, IPC_NOWAIT) < 0)
     {
@@ -42,9 +42,9 @@ int message_queue_read(key_t key, struct msgbuff *sbuf)
       return -1;
    }
 
-   buflen = strlen(sbuf->msg_text) + 1 ;
+   buflen = MAXSIZE + 1 + 12 ;
 
-   if (msgrcv(msqid, sbuf, MAXSIZE, MSG_TYPE_GLOW_LED, 0) < 0)
+   if (msgrcv(msqid, sbuf, buflen , MSG_TYPE_GLOW_LED, 0) < 0)
    {
         printf ("\nQueue Failure - Send : %d, %d, %s, %d\n", msqid, (int)sbuf->msg_type, sbuf->msg_text, (int)buflen);
         return -1;

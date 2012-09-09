@@ -23,7 +23,7 @@ int message_queue_write(key_t key, struct msgbuff *sbuf )
 
     buflen = strlen(sbuf->msg_text) + 1 ;
 
-    if (msgsnd(msqid, sbuf, buflen, IPC_NOWAIT) < 0)
+    if (msgsnd(msqid, sbuf, buflen, 0) < 0)
     {
         printf ("\nQueue Failure - Send : %d, %d, %s, %d\n", msqid, (int)sbuf->msg_type, sbuf->msg_text, (int)buflen);
         return -1;
