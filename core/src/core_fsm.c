@@ -65,11 +65,13 @@ struct msgbuff GetMessageStateEvent()
 {
   struct msgbuff msg;
   message_queue_read( QUEUE_READ_FROM_DEVICE, &msg);
+  printf("\nGot a new message [ Inside Core ]\n");
   printf("%s\n", msg.msg_text);
   if(msg.msg_type == 1)
   {
       state = msg.msg_state;
       event = msg.msg_event;
+      printf("\nPutting it into Device Queue\n");
   }
   if(msg.msg_type == 2)
   {
@@ -88,6 +90,7 @@ int main()
     int i=0;
     state = ST_INIT;
     struct msgbuff msg;
+    message_queue_init(QUEUE_READ_FROM_DEVICE);
     //Infinite while loop waiting for messages
     while (state != ST_TERM) {
         
@@ -110,8 +113,6 @@ int main()
         
         //Next State Table
 
-
-    
   }
   return 0;
 }

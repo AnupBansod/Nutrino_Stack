@@ -25,3 +25,8 @@ struct msgbuff
 int message_queue_init(key_t key);
 int message_queue_write(key_t key, struct msgbuff *sbuf );
 int message_queue_read(key_t key, struct msgbuff *sbuf);
+
+//Types of message
+
+#define MSG_TYPE_DUMY_MSG           43400
+#define MSG_TYPE_GLOW_LED           43401

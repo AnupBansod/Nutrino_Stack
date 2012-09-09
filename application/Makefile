@@ -1,4 +1,4 @@
-IDIR =../include
+IDIR = ../core/include
 CC=gcc
 CFLAGS=-I$(IDIR)
 
@@ -7,17 +7,17 @@ LDIR =../lib
 
 LIBS=-lm
 
-_DEPS =core_fsm.h queue_manager.h
+_DEPS = core_fsm.h queue_manager.h 
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = core_fsm.o queue_manager.o
+_OBJ = my_NFC_UserSpace_App.o queue_manager.o application_handler.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 
 $(ODIR)/%.o: %.c $(DEPS)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-core: $(OBJ)
+app: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS) $(LIBS)
 
 .PHONY: clean

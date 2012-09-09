@@ -44,7 +44,7 @@ int message_queue_read(key_t key, struct msgbuff *sbuf)
 
    buflen = strlen(sbuf->msg_text) + 1 ;
 
-   if (msgrcv(msqid, sbuf, MAXSIZE, 1, 0) < 0)
+   if (msgrcv(msqid, sbuf, MAXSIZE, MSG_TYPE_GLOW_LED, 0) < 0)
    {
         printf ("\nQueue Failure - Send : %d, %d, %s, %d\n", msqid, (int)sbuf->msg_type, sbuf->msg_text, (int)buflen);
         return -1;
