@@ -9,7 +9,6 @@ typedef struct {
 // All the states
 
 #define ST_ANY              -1
-#define ST_INIT              0
 #define ST_ERROR             1
 #define ST_TERM              2
 #define ST_AUTH              3
@@ -17,10 +16,10 @@ typedef struct {
 #define ST_END               5
 
 //States for LED
-#define ST_GLOW_LED_INIT                    12301
-#define ST_GLOW_LED_SEND_TO_DEVICE          12302
-#define ST_GLOW_LED_SEND_ACK                12303
-#define ST_ACK_SENDING                      12305
+#define ST_INIT                    12301
+#define ST_SEND_TO_DEVICE          12302
+#define ST_SEND_ACK                12303
+#define ST_ACK_SENDING             12305
 
 //All the Events
 
@@ -52,6 +51,6 @@ int GetNextEvent();
 
 
 
-//GLOW_LED_CALL_BACKS
+//STATE_LED_CALL_BACKS
 int Init_led(struct msgbuff) ;
-int Send_no_ack(struct msgbuff) ;
+int Send_ack(struct msgbuff) ;

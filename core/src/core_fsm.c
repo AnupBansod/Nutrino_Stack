@@ -8,28 +8,21 @@ struct msgbuff msg;
 #define TRANS_COUNT (sizeof(trans)/sizeof(*trans))
 
 tTransition trans[] = {
-        { ST_INIT, EV_READ_FROM_DEVICE, &GotKey},
-        { ST_AUTH, EV_READ_FROM_DEVICE, &Auth},
-        { ST_READ, EV_READ_FROM_DEVICE, &ReadData},
-        { ST_END, EV_READ_FROM_DEVICE, &EndComm},
-        { ST_ANY, EV_READ_FROM_DEVICE, &FsmError}
-};
-
-tTransition glow_led[] = {
-        { ST_GLOW_LED_INIT, EV_SEND_TO_CORE_NO_ACK , &Init_led },
-        { ST_GLOW_LED_INIT, EV_SEND_TO_CORE , &Init_led },
-        { ST_GLOW_LED_INIT, EV_SEND_TO_CORE_DEV_ACK , &Init_led },
-        { ST_GLOW_LED_SEND_TO_DEVICE, EV_SEND_TO_DEVICE_NO_ACK, &Send_no_ack}
+        { ST_INIT, EV_SEND_TO_CORE_NO_ACK , &Init_led },
+        { ST_INIT, EV_SEND_TO_CORE , &Init_led },
+        { ST_INIT, EV_SEND_TO_CORE_DEV_ACK , &Init_led },
+        { ST_SEND_TO_DEVICE, EV_SEND_TO_DEVICE_NO_ACK, &Send_ack},
+        { ST_SEND_TO_DEVICE, EV_SEND_TO_DEVICE, &Send_ack}
 };
 //All the transition Functions
 int Init_led(struct msgbuff m)
 {
-    printf("\nCORE: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
+  //  printf("\nCORE: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
     switch(m.msg_event)
     {
         case EV_SEND_TO_CORE_NO_ACK:
 
-            m.msg_state = ST_GLOW_LED_SEND_TO_DEVICE;
+            m.msg_state = ST_SEND_TO_DEVICE;
             m.msg_event = EV_SEND_TO_DEVICE_NO_ACK;
             message_queue_write( QUEUE_CORE, &m);
 
@@ -38,13 +31,13 @@ int Init_led(struct msgbuff m)
 
         case EV_SEND_TO_CORE:
 
-            m.msg_state = ST_GLOW_LED_SEND_ACK;
+            m.msg_state = ST_SEND_ACK;
             m.msg_event = EV_SEND_TO_APP;
             message_queue_write( QUEUE_APPLICATION, &m);
 
             printf("\nCORE 2.1: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
 
-            m.msg_state = ST_GLOW_LED_SEND_TO_DEVICE;
+            m.msg_state = ST_SEND_TO_DEVICE;
             m.msg_event = EV_SEND_TO_DEVICE_NO_ACK;
             message_queue_write( QUEUE_DEVICE, &m);
 
@@ -52,10 +45,11 @@ int Init_led(struct msgbuff m)
             break;
 
         case EV_SEND_TO_CORE_DEV_ACK:
-            m.msg_state = ST_GLOW_LED_SEND_TO_DEVICE;
+            m.msg_state = ST_SEND_TO_DEVICE;
             m.msg_event = EV_SEND_TO_DEVICE;
+            strcpy(m.msg_text,"Hey Device Please GLow the LED\n");
             message_queue_write( QUEUE_DEVICE, &m);
-    
+            printf("\nCase 3\n");
             printf("\nCORE 3: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
             break;
         default:
@@ -63,9 +57,19 @@ int Init_led(struct msgbuff m)
       }
     return 0;
 }
-int Send_no_ack(struct msgbuff m)
+int Send_ack(struct msgbuff m)
 {
-    printf("\nSending NO ack back to app\n");
+    if(EV_SEND_TO_DEVICE_NO_ACK)
+        printf("\nSending NO ack back to app\n");
+    if(EV_SEND_TO_DEVICE)
+    {
+        printf("\nSending an ack to device\n");
+        m.msg_state = ST_SEND_ACK;
+        m.msg_event = EV_SEND_TO_APP;
+        strcpy(m.msg_text,"Ack for the Application\n");
+        message_queue_write( QUEUE_APPLICATION, &m);
+        printf("\nCORE 2.1: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
+    }
     return 0;
 }
 
@@ -102,7 +106,7 @@ struct msgbuff GetMessageStateEvent()
 {
     message_queue_read( QUEUE_CORE, &msg);
  //   printf("\nGot message [ Inside Core ]\n");
-    printf("\n CORE: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
+//    printf("\n CORE: State : %ld Event %ld \n Message :%s\n\n\n", msg.msg_state, msg.msg_event, msg.msg_text);
 //    printf("\n In GetSTEV State : %ld Event %ld session: %ld\n", msg.msg_state, msg.msg_event, msg.msg_session_id);
  //   printf("%s\n", msg.msg_text);
     if(msg.msg_type == MSG_TYPE_GLOW_LED)
@@ -138,34 +142,19 @@ int main()
         GetMessageStateEvent();
 //        printf("\nCore State : %d Event %d \n", state,event);
         //One State Table
-        if(message_type == 1)
-        {
-            for (i = 0; i < TRANS_COUNT; i++) {
-                //Check for the state of message
-              if ((state == trans[i].st)) {
-                //Check for the event in the msg 
-                if ((event == trans[i].ev)) {
-                    // call the function according to the next state
-                  state = (trans[i].fn)(msg);
-                  break;
-                }
-              }
-            }
-        }
         if(message_type == MSG_TYPE_GLOW_LED)
 
         for (i = 0; i < TRANS_COUNT; i++) {
             //Check for the state of message
-          if ((state == glow_led[i].st)) {
+          if ((state == trans[i].st)) {
             //Check for the event in the msg 
-            if ((event == glow_led[i].ev)) {
+            if ((event == trans[i].ev)) {
                 // call the function according to the next state
-              state = (glow_led[i].fn)(msg);
+              state = (trans[i].fn)(msg);
               break;
             }
           }
         }
-        //Next State Table
 
   }
   return 0;
