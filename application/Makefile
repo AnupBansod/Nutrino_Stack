@@ -24,3 +24,5 @@ app: $(OBJ)
 
 clean:
 	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+callback_tester:
+	gcc callback_tester.c queue_manager.c -o callback_tester -I ../core/include/ 

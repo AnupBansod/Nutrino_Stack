@@ -7,9 +7,7 @@ int main()
     {
         int choice=0,return_value;
         printf("\nWhat do you want to do with your life ??\n");
-        printf("\n1.Glow LED without an Ack\n \
-                  2.Glow LED with an Ack From FSM\n \
-                  3.Glow LED with an Ack From Board");
+        printf("\n1.Glow LED without an Ack\n 2.Glow LED with an Ack From FSM\n 3.Glow LED with an Ack From Board");
         scanf("%d",&choice);
         switch(choice)
         {
